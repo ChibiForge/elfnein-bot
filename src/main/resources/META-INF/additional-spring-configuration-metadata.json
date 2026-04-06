@@ -1,7 +1,12 @@
-{
-	"properties": [{
-		"name": "discord.bot.token",
-		"type": "java.lang.String",
-		"description": "Token of your discord bot."
-	}]
-}
+{"properties": [
+  {
+    "name": "discord.bot.token",
+    "type": "java.lang.String",
+    "description": "Token of your discord bot."
+  },
+  {
+    "name": "discord.bot.developer.id",
+    "type": "java.lang.String",
+    "description": "Developer id of your discord bot."
+  }
+]}

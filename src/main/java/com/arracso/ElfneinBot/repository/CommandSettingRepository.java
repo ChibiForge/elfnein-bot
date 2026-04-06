@@ -9,4 +9,5 @@ import com.arracso.ElfneinBot.model.CommandSetting;
 public interface CommandSettingRepository extends JpaRepository<CommandSetting, Long> {
 	
 	List<CommandSetting> findByCommand(Integer command);
+
 }

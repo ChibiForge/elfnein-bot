@@ -11,6 +11,7 @@ import com.arracso.ElfneinBot.listener.EventListener;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
+import jakarta.annotation.PreDestroy;
 
 
 @Configuration
@@ -18,10 +19,12 @@ public class BotConfiguration {
 
     @Value("${discord.bot.token}")
     private String token;
+    
+    private GatewayDiscordClient client;
 
     @Bean
     <T extends Event> GatewayDiscordClient gatewayDiscordClient(List<EventListener<T>> eventListeners) {
-    	GatewayDiscordClient client = DiscordClientBuilder.create(token)
+    	client = DiscordClientBuilder.create(token)
           .build()
           .login()
           .block();
@@ -33,8 +36,14 @@ public class BotConfiguration {
               .subscribe();
         }
         
-        //client.onDisconnect().block();
-        
         return client;
     }
+    
+    @PreDestroy
+    public void onShutDown() {
+        if (client != null) {
+            client.logout().block();
+        }
+    }
+    
 }

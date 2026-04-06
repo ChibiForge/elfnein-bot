@@ -6,8 +6,8 @@ import java.util.Set;
 import com.arracso.ElfneinBot.util.Locator;
 import com.arracso.ElfneinBot.util.Locator.Location;
 
+import discord4j.core.object.emoji.Emoji;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.reaction.ReactionEmoji;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,22 +15,22 @@ public class TriggerReactionsCommand extends MessageCommand {
 	
 	private String trigger;
 	private Location[] triggerLocation;
-	private Set<ReactionEmoji> reactions;
+	private Set<Emoji> reactions;
 	private String authorID;
 	
-	public TriggerReactionsCommand(String trigger, Location[] triggerLocation, ReactionEmoji[] reactions) {
+	public TriggerReactionsCommand(String trigger, Location[] triggerLocation, Emoji[] reactions) {
 		this.trigger = trigger;
 		this.triggerLocation = triggerLocation;
-		this.reactions = new HashSet<ReactionEmoji>();
-		for(ReactionEmoji reaction:reactions) this.reactions.add(reaction);
+		this.reactions = new HashSet<Emoji>();
+		for(Emoji reaction:reactions) this.reactions.add(reaction);
 		this.authorID = "";
 	}
 	
-	public TriggerReactionsCommand(String trigger, Location[] triggerLocation, ReactionEmoji[] reactions, String authorID) {
+	public TriggerReactionsCommand(String trigger, Location[] triggerLocation, Emoji[] reactions, String authorID) {
 		this.trigger = trigger;
 		this.triggerLocation = triggerLocation;
-		this.reactions = new HashSet<ReactionEmoji>();
-		for(ReactionEmoji reaction:reactions) this.reactions.add(reaction);
+		this.reactions = new HashSet<Emoji>();
+		for(Emoji reaction:reactions) this.reactions.add(reaction);
 		this.authorID = authorID;
 	}
 	

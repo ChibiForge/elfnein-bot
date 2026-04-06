@@ -4,8 +4,8 @@ import com.arracso.ElfneinBot.util.Global;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.emoji.Emoji;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.reaction.ReactionEmoji;
 import reactor.core.publisher.Mono;
 
 public abstract class ReactionCommand {
@@ -27,9 +27,9 @@ public abstract class ReactionCommand {
 		
 		// Check if reaction is the needed
 		if(custom && event.getEmoji().asCustomEmoji().isPresent())
-			return  event.getEmoji().asCustomEmoji().get().equals(ReactionEmoji.custom(Snowflake.of(emojiID),emojiName, animated));
+			return  event.getEmoji().asCustomEmoji().get().equals(Emoji.custom(Snowflake.of(emojiID),emojiName, animated));
 		else if (!custom && event.getEmoji().asUnicodeEmoji().isPresent())
-			return event.getEmoji().asUnicodeEmoji().get().equals(ReactionEmoji.unicode(emojiName));
+			return event.getEmoji().asUnicodeEmoji().get().equals(Emoji.unicode(emojiName));
 		
 		return false;
 	}

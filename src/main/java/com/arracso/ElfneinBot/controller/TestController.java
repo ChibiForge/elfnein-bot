@@ -1,5 +1,6 @@
 package com.arracso.ElfneinBot.controller;
 
+import discord4j.core.object.entity.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.MessageChannel;
+import reactor.core.publisher.Mono;
 
 @RestController
 @CrossOrigin(maxAge = 3600)
@@ -27,16 +29,21 @@ public class TestController {
 
 	@PostMapping("/say")
 	public @ResponseBody String say(
-		@RequestParam("message") String message,
+		@RequestParam("message") String msg,
 		@RequestParam("channelId") String channelID,
-		@RequestParam(name = "replyMessageId", defaultValue="") String replyMessageId
+		@RequestParam(name = "replyMessageId", defaultValue="") String replyMsgId
 	) {
-		if(replyMessageId.isBlank())
-			client.getChannelById(Snowflake.of(channelID)).ofType(MessageChannel.class)
-			.flatMap(channel -> channel.createMessage(message)).subscribe();
+		
+		Mono<? extends Message> action;
+		
+		if(replyMsgId.isBlank())
+			action = client.getChannelById(Snowflake.of(channelID)).ofType(MessageChannel.class)
+			.flatMap(channel -> channel.createMessage(msg)); // TODO check for errors
 		else
-			client.getChannelById(Snowflake.of(channelID)).ofType(MessageChannel.class)
-			.flatMap(channel -> channel.createMessage(message).withMessageReference(Snowflake.of(replyMessageId))).subscribe();
+			action = client.getChannelById(Snowflake.of(channelID)).ofType(MessageChannel.class)
+			.flatMap(channel -> channel.createMessage(msg)); // TODO add reply
+		
+		action.subscribe();
 		
 		return "OK";
 	}

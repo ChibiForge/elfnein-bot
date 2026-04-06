@@ -14,12 +14,16 @@ public class TriggerMessageCommand extends MessageCommand {
 	private String[] answers;
 	private double chance;
 	
-	public TriggerMessageCommand(String[] triggers,String[] answers,double chance,boolean hasToMentionBot){
+	public TriggerMessageCommand(String[] triggers,String[] answers,double chance,boolean hasToMentionBot, Integer commandId){
 		this.hasToMentionBot = hasToMentionBot;
 		this.triggers = triggers;
 		this.answers = answers;
 		this.chance = chance;
-		this.commandId = 0;
+		this.commandId = commandId;
+	}
+	
+	public TriggerMessageCommand(String[] triggers,String[] answers,double chance,boolean hasToMentionBot){
+		this(triggers,answers,chance,hasToMentionBot,2);
 	}
 	
 	public TriggerMessageCommand(String[] triggers,String[] answers,double chance){
@@ -48,12 +52,13 @@ public class TriggerMessageCommand extends MessageCommand {
 	@Override
 	public Mono<Void> execute(Message message) {
 		Random rn = new Random();
+		
 		if(!hasToMentionBot && chance >= rn.nextDouble() || Util.mentionsBot(message)) {
 			String response = answers[rn.nextInt(answers.length)];
-			return message.getChannel().flatMap(channel -> channel.createMessage(response)
-			.withMessageReference(message.getId()))
-		    .then();
-		}else return Mono.empty();
+			return Util.replyToMessage(message, response).then();
+		}
+
+		return Mono.empty();
 	}
 
 }

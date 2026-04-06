@@ -1,6 +1,5 @@
 package com.arracso.ElfneinBot.listener;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -14,12 +13,18 @@ import reactor.core.publisher.Mono;
 @Service
 public class MessageUpdateListener implements EventListener<MessageUpdateEvent> {
 	
-	// Setup commands //
-	private static final Set<MessageCommand> commands = new HashSet<>();
-	static {
-		commands.add(new KarutaCollectionListMessageCommand());
-		//commands.add(new KarutaListenCommand());
-	}
+
+	private static final Set<MessageCommand> commandsActivity = Set.of(
+		new NodeDataCommand(true)
+	);
+	
+	@SuppressWarnings("unused")
+	private static final Set<MessageCommand> commandsTest = Set.of(
+		new KarutaCollectionListMessageCommand(),
+		new KarutaListenCommand()
+	);
+	
+	private static final Set<MessageCommand> commands = commandsActivity;
 	
     @Override
     public Class<MessageUpdateEvent> getEventType() {
@@ -30,8 +35,9 @@ public class MessageUpdateListener implements EventListener<MessageUpdateEvent> 
     public Mono<Void> execute(MessageUpdateEvent event) {
     	return event.getMessage()
     		.flatMap(message -> Flux.fromIterable(commands)
+    			.filter(command -> command.isActive(message))
     			.filter(command -> command.check(message))
     			.flatMap(command -> command.execute(message)).next())
-    		.then();      		
+    		.onErrorComplete().then();      		
     }
 }

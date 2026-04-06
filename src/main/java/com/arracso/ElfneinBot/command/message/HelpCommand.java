@@ -1,56 +1,30 @@
 package com.arracso.ElfneinBot.command.message;
 
 import discord4j.core.object.entity.Message;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
 public class HelpCommand extends MessageCommand {
 
 	public HelpCommand(){
-		commandName = "help";
+		commandNames.add("help");
+		commandNames.add("h");
+		commandId = 0;
 	}
 	
 	@Override
 	public Mono<Void> execute(Message message) {
-		//String target = message.getContent().replaceFirst(".*?help", "").trim();
+		EmbedCreateSpec.Builder embedBuilder = EmbedCreateSpec.builder();
+		embedBuilder.color(Color.SEA_GREEN);
+        embedBuilder.title("Help page");
+        embedBuilder.description("This bot has been created by <@278957461120090113> please go to the [support server](https://discord.gg/2Ke6E4jQrg) for any questions related to the bot.\nHere are some of the features the bot has:");
+        embedBuilder.addField("Date Solver","You can ask on the support server how to set it up.\n You might also use the following commands:\n- solve: to solve a date\n- map: to check the readed map",false);
+        embedBuilder.footer("Version 1.0.1", null);
+        
 		return message.getChannel().block()
-			.createMessage("<@278957461120090113> was too lazy to do the help page so, if you have any doubs, ask him.")
-			.withMessageReference(message.getId())
+			.createMessage(embedBuilder.build())
+			.withMessageReference(message.getData().messageReference())
 			.then();
 	}
-	
-	
-/*
-EmbedCreateSpec embed = EmbedCreateSpec.builder()
-.color(Color.RED)
-.title("Which way is your car facing?")
-.build();
-
-Button buttonRight = Button.primary("right", "Right");
-Button buttonLeft = Button.primary("left", "Left");
-
-List<Button> buttons = new ArrayList<Button>();
-buttons.add(buttonLeft);
-buttons.add(buttonRight);
-
-Mono<Void> tempListener = message.getClient().on(ButtonInteractionEvent.class, event -> extracted(event,message)).timeout(Duration.ofSeconds(30))
-.onErrorResume(TimeoutException.class, ignore -> Mono.empty()).then();
-
-return message.getChannel().block().createMessage(embed).withMessageReference(message.getId()).withComponents(ActionRow.of(buttons)).then(tempListener);
-*/
-
-/*
-private Publisher<Void> extracted(ButtonInteractionEvent event, Message message) {
-	//return event.reply("You clicked me!").withEphemeral(true);
-	if (event.getCustomId().equals("right")) {
-		event.getMessage().get().delete().subscribe();
-		return message.getChannel().block().createMessage(Global.loadingGIF).withMessageReference(message.getId())
-		.flatMap(messageRes -> executeSolve(message, messageRes, '>')).then();
-	} else if(event.getCustomId().equals("left")) {
-		event.getMessage().get().delete().subscribe();
-		return message.getChannel().block().createMessage(Global.loadingGIF).withMessageReference(message.getId())
-		.flatMap(messageRes -> executeSolve(message, messageRes, '<')).then();
-	}
-	return Mono.empty();
-}
-*/
 }

@@ -15,6 +15,10 @@ public class DateStats {
 		this(100,50,50,75,100,0,false,false,0);
 	}
 	
+	public DateStats(int fuel,int food,int drink,int entertainment, int time, int AP) {
+		this(fuel,food,drink,entertainment,time,AP,null,null);		
+	}
+	
 	public DateStats(int fuel,int food,int drink,int entertainment, int time, int AP, Boolean ring, Boolean house) {
 		this(fuel,food,drink,entertainment,time,AP,ring,house,10);		
 	}

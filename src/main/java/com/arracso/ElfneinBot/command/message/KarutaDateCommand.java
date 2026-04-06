@@ -1,23 +1,18 @@
 package com.arracso.ElfneinBot.command.message;
 
-import java.awt.image.BufferedImage;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-
-import javax.imageio.ImageIO;
+import java.time.Instant;
 
 import com.arracso.ElfneinBot.util.Global;
 import com.arracso.ElfneinBot.util.Locator;
 import com.arracso.ElfneinBot.util.Locator.Location;
-import com.arracso.ElfneinBot.util.Position;
+import com.arracso.ElfneinBot.util.Service;
+import com.arracso.ElfneinBot.util.Util;
 import com.arracso.ElfneinBot.util.DateSolver.DateSolver;
-import com.arracso.ElfneinBot.util.DateSolver.DateStats;
 import com.arracso.ElfneinBot.util.DateSolver.DateSolver.Solution;
 
 import discord4j.core.object.entity.Message;
-import discord4j.core.spec.MessageEditSpec;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 public class KarutaDateCommand extends MessageCommand {
 	
@@ -29,7 +24,7 @@ public class KarutaDateCommand extends MessageCommand {
 		this.trigger = Global.kviT;
 		this.triggerLocation = Global.kviL;
 		this.authorID = Global.KarutaID;
-		this.commandId = 1;
+		this.commandId = Global.cmdIdDate;
 	}
 	
 	@Override
@@ -46,35 +41,36 @@ public class KarutaDateCommand extends MessageCommand {
 	
 	
 	@Override
-	public Mono<Void> execute(Message message) {
-		return message.getChannel().block().createMessage(Global.loadingGIF).withMessageReference(message.getId())
-				.flatMap(messageRes -> executeSolve(message, messageRes)).then();
-		
-	}
-
-	@SuppressWarnings({ "deprecation" })
-	private Mono<? extends Void> executeSolve(Message message, Message messageRes/*,char carDir*/) {
-		try {
-			// Get direction
-			char carDir = '>';
-			if(message.getComponents().get(1).getChildren().get(0).getData().disabled().isAbsent()) {
-				carDir = '<';
+	public Mono<Void> execute(Message message) {		
+		// Check if banned
+		if(message.getReferencedMessage().isPresent()) {
+			Message aux = message.getReferencedMessage().get();
+			if(aux.getAuthor().isPresent()) {
+				if(Service.userService != null) {
+					String userId = aux.getAuthor().get().getId().asString();
+					if(Service.userService.isBanned(userId)) {
+						String reason = "" + Service.userService.getReasonOfBan(userId);
+						return Util.replyToMessage(message, reason).then();
+						
+					}
+				}
 			}
-			
-			// Check map
-			URL url = URI.create(message.getEmbeds().get(0).getImage().get().getUrl()).toURL();
-		    BufferedImage image = ImageIO.read(url);
-		    char[][] map = DateSolver.readMap(image);
-		    
-		    // Solution
-			Solution sol = DateSolver.solve(map,new Position(5,14),carDir,new DateStats(),new HashMap<Position,Integer>());
-			if(sol != null) return messageRes.edit(MessageEditSpec.builder().content(sol.getActions()+ "`" + sol.getRealPoints() + "`").build()).then();
-			else return messageRes.edit(MessageEditSpec.builder().content("Impossible Board :(").build()).then();
-		}catch(Exception e) {
-			System.out.println("ERROR");
-			e.printStackTrace();
 		}
-		return messageRes.edit(MessageEditSpec.builder().content("Something went wrong. Tell <@278957461120090113> to fix me.").build()).then();
+		
+		// Get saved solution
+		Solution sol = DateSolver.getSavedSolution(message);
+		if(sol != null) return Util.replyToMessage(message, DateSolver.getSolutionEmbed(sol)).then();
+		
+		// Get uptime
+		Instant uptime = DateSolver.getUptime(message);
+		if(uptime != null) return Util.replyToMessage(message, "Give me more time! Don't spam!").then();
+		
+		return Util.replyToMessage(message, Global.loadingGIF)
+			.flatMap(messageRes ->  Mono.fromCallable(
+				() -> DateSolver.executeSolve(message, messageRes)
+			).subscribeOn(Schedulers.parallel())
+			.flatMap(mono -> mono.then())
+		);
 	}
 
 }

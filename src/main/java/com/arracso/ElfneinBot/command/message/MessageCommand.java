@@ -1,5 +1,9 @@
 package com.arracso.ElfneinBot.command.message;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.arracso.ElfneinBot.util.Global;
 import com.arracso.ElfneinBot.util.Service;
 
@@ -9,8 +13,8 @@ import reactor.core.publisher.Mono;
 public abstract class MessageCommand {
 	
 	String[] prefixes = {"Elfnein ","e!","e.","E!","E.","<@"+Global.ElfneinID+">"};
-	String commandName;
-	Integer commandId = 0;
+	List<String> commandNames = new ArrayList<String>();
+	Integer commandId = 99;
 	
 	public Integer getCommandId() {
 		return commandId;
@@ -22,18 +26,51 @@ public abstract class MessageCommand {
 	}
 	
 	public Boolean check(Message message) {
-		Boolean isCommand = false;
-		int i = 0;
-		while(i<prefixes.length && !isCommand) {
-			if(message.getContent().startsWith(prefixes[i])) {
-				String messageAux = message.getContent().replaceFirst("^"+prefixes[i], "").trim();
-				if(messageAux.toLowerCase().equals(commandName) || messageAux.toLowerCase().startsWith(commandName+" ")) isCommand = true;
-			}
-			i++;
-		}
-		return isCommand;
+		// Check prefix
+		String messageStr = message.getContent();
+        String prefix = findPrefix(messageStr);
+        if (prefix == null) return false;
+        // Check command
+        String withoutPrefix = messageStr.substring(prefix.length());
+        String commandName = findCommandName(withoutPrefix);
+        if (commandName == null) return false;
+        
+		return true;
 	}
 	
 	public abstract Mono<Void> execute(Message message);
+	
+	public List<String> getParameters(Message message) {
+        String withoutCommand = stripCommand(message);
+        if(withoutCommand.isBlank()) return new ArrayList<String>();
+        return Arrays.asList(withoutCommand.split("\\s+"));
+    }
+	
+	public String stripCommand(Message message) {
+		String messageStr = message.getContent();
+        String prefix = findPrefix(messageStr);
+        String withoutPrefix = messageStr.substring(prefix.length());
+        String commandName = findCommandName(withoutPrefix);
+        return withoutPrefix.substring(commandName.length()).trim();
+	}
+	
+	public String getCommandName(Message message) {
+		String messageStr = message.getContent();
+        String prefix = findPrefix(messageStr);
+        String withoutPrefix = messageStr.substring(prefix.length());
+        return findCommandName(withoutPrefix);
+	}
+	
+    private String findPrefix(String message) {
+        for (String prefix : prefixes) 
+        	if (message.toLowerCase().startsWith(prefix.toLowerCase())) return prefix;
+        return null;
+    }
+
+    private String findCommandName(String message) {
+        for (String commandName : commandNames)
+        	if (message.toLowerCase().startsWith(commandName.toLowerCase() + " ") || message.toLowerCase().equals(commandName)) return commandName;
+        return null;
+    }
 
 }

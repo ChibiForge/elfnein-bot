@@ -17,11 +17,9 @@ public class KarutaCollectionListReactionCommand extends ReactionCommand {
 		try {
 			String cards = Util.substring(Util.getCards(message.getEmbeds().get(0).getDescription().get()).toString(), 1, -1);
 			if(cards.isEmpty()) return Mono.empty();		
-			return message.getChannel().flatMap(channel -> channel.createMessage(cards)
-				.withMessageReference(message.getId())).then();
+			return Util.replyToMessage(message, cards).then();
 		}catch(Exception e) {
-			return message.getChannel().flatMap(channel -> channel.createMessage("Something went wrong! Please tell <@278957461120090113> to fix me!")
-					.withMessageReference(message.getId())).then();
+			return Util.replyToMessage(message, "Something went wrong! Please tell <@278957461120090113> to fix me!").then();
 		}
 		
 	}

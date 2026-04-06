@@ -1,12 +1,19 @@
 package com.arracso.ElfneinBot.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import discord4j.core.object.Embed;
 import discord4j.core.object.Embed.Image;
+import discord4j.core.object.component.Container;
 import discord4j.core.object.entity.Message;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.discordjson.json.MessageReferenceData;
+import discord4j.rest.util.AllowedMentions;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public class Util {
 	
@@ -41,6 +48,55 @@ public class Util {
     	.filter(message -> message.getReferencedMessage().get().getId().toString().equals(refMessage.getId().toString()));
     }
     
+    public static Mono<Message> replyToMessage(Message message, String content) {
+    	MessageReferenceData ref = MessageReferenceData.builder().messageId(message.getId().asLong()).build();
+    	return message.getChannel().flatMap(channel -> channel.createMessage(content).withMessageReference(ref));
+    }
+    
+    public static Mono<Message> replyToMessage(Message message, EmbedCreateSpec content) {
+    	MessageReferenceData ref = MessageReferenceData.builder().messageId(message.getId().asLong()).build();
+    	return message.getChannel().flatMap(channel -> channel.createMessage(content).withMessageReference(ref));
+    }
+    
+    public static Mono<Message> replyToMessage(Message message, Container... content) {
+    	MessageReferenceData ref = MessageReferenceData.builder().messageId(message.getId().asLong()).build();
+    	return message.getChannel().flatMap(channel -> channel.createMessage().withFlags(Message.Flag.IS_COMPONENTS_V2).withComponents(content).withMessageReference(ref));
+    }
+    
+    public static Mono<Message> replyToMessageSilent(Message message, Container... content) {
+    	MessageReferenceData ref = MessageReferenceData.builder().messageId(message.getId().asLong()).build();
+    	return message.getChannel().flatMap(channel -> channel.createMessage().withFlags(Message.Flag.IS_COMPONENTS_V2).withComponents(content).withMessageReference(ref).withAllowedMentions(AllowedMentions.suppressAll()));
+    }
+    
+    public static String parseId(String par) {
+		String id = par;
+		if(par.startsWith("<@")) id = par.split("@")[1].split(">")[0];
+		return id;
+	}
+    
+    public static void showReply(Message message) {
+    	System.out.println("###################");
+		System.out.println("#### NEW REPLY ####");
+		System.out.println("###################");
+		
+		message.getMessageReference().ifPresent(messageReference -> {
+			// You can get id and channel id of the referenced message
+			System.out.println("Ref Channel ID: " + messageReference.getChannelId().toString());
+			System.out.println("Ref Message ID: " + messageReference.getMessageId().toString());
+			System.out.println(message.getClient().getMessageById(messageReference.getChannelId(), messageReference.getMessageId().get()).block().getContent());
+		});
+		
+		message.getComponents().forEach(component ->{
+			System.out.println("component"); // Theres no components
+		});
+		
+		message.getReferencedMessage().ifPresent(refMessage ->{
+			System.out.println("Referenced message"); // This only shows if the bot has access to the referenced message
+			System.out.println(refMessage.getContent());
+		});
+		
+    }
+    
     public static void showEmbed(Message message) {
 		System.out.println("#################################");
 		System.out.println("#### NEW MESSAGE FROM KARUTA ####");
@@ -66,7 +122,11 @@ public class Util {
 				System.out.println("------------");
 				System.out.println("-- Fields --");
 				System.out.println("------------");
-				embed.getFields().forEach(field -> System.out.print(field.getName()));
+				embed.getFields().forEach(field -> {
+					System.out.println(field.getName());
+					System.out.println(field.getValue());
+				});
+				
 			}
 			if(embed.getFooter().isPresent()) {
 				System.out.println("------------");
@@ -96,6 +156,15 @@ public class Util {
 		});
 		
     }
+    
+    public static Map<String, String> parseButtonMetadata(String metadataStr) {
+		Map<String,String> metadata = new HashMap<String,String>();
+		for(String kv : metadataStr.split("&")) {
+			String [] p = kv.split("=", 2);
+			if(p.length == 2) metadata.put(p[0],p[1]);
+		}
+		return metadata;
+	}
 
 	//////////////////
 	// Karuta Utils //
@@ -120,6 +189,10 @@ public class Util {
 	public static String substring(String str, int i, int f) {
 		if(f<0) f = str.length()+f;
 		return str.substring(i,f);
+	}
+
+	public static String trimCommand(String content, String commandName) {
+		return substring(content, content.length()-content.toLowerCase().replaceFirst(".*?"+commandName, "").trim().length(),content.length());
 	}
 	
 }

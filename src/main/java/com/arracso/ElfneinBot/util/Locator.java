@@ -3,6 +3,7 @@ package com.arracso.ElfneinBot.util;
 import java.util.List;
 
 import discord4j.core.object.Embed;
+import discord4j.core.object.Embed.Field;
 import discord4j.core.object.entity.Message;
 
 public class Locator {
@@ -12,6 +13,7 @@ public class Locator {
 		EMBED,
 		TITLE,
 		DESCRIPTION,
+		FIELDS,
 		FOOTER
 	}
 	
@@ -43,6 +45,15 @@ public class Locator {
 					break;
 				case DESCRIPTION:
 					if(embed.getDescription().isPresent()) locatedString = embed.getDescription().get();
+					next = false;
+					break;
+				case FIELDS:
+					if(!embed.getFields().isEmpty()) {
+						for(Field field:embed.getFields()) {
+							locatedString = locatedString + field.getName() + "\n";
+							locatedString = locatedString + field.getValue() + "\n";
+						}
+					}
 					next = false;
 					break;
 				case FOOTER:
