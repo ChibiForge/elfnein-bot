@@ -1,0 +1,62 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build JAR
+        run: mvn -B clean package -DskipTests
+
+      - name: Prepare SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      # ---------- STAGING ----------
+      - name: Upload staging JAR
+        if: github.ref_name == 'staging'
+        run: |
+          scp target/*.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/elfnein-staging.jar
+
+      - name: Deploy staging
+        if: github.ref_name == 'staging'
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+            sudo mv /tmp/elfnein-staging.jar /opt/bots/elfnein-staging/app.jar && \
+            sudo chown botsvc:botsvc /opt/bots/elfnein-staging/app.jar && \
+            sudo systemctl restart elfnein-staging && \
+            sudo systemctl status elfnein-staging --no-pager"
+
+      # ---------- PRODUCTION ----------
+      - name: Upload production JAR
+        if: github.ref_name == 'main'
+        run: |
+          scp target/*.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/elfnein-prod.jar
+
+      - name: Deploy production
+        if: github.ref_name == 'main'
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+            sudo mv /tmp/elfnein-prod.jar /opt/bots/elfnein-prod/app.jar && \
+            sudo chown botsvc:botsvc /opt/bots/elfnein-prod/app.jar && \
+            sudo systemctl restart elfnein-prod && \
+            sudo systemctl status elfnein-prod --no-pager"
