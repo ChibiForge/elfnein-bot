@@ -15,18 +15,14 @@ import reactor.core.publisher.Mono;
 @Service
 public class MessageCreateListener implements EventListener<MessageCreateEvent> {
 	
-	@SuppressWarnings("unused")
-	private static final Set<MessageCommand> commandsSolve = Set.of(
-		// Solve commands - ID 1
-		new KarutaDateCommand(),
-		new KarutaSolveDateCommand(),
-		new KarutaMapDateCommand()
-	);
-	
 	private static final Set<MessageCommand> commandsGeneral = Set.of(
 		// Base Commands - ID 0
 		new HelpCommand(),
-		new PingCommand("test"),
+		new PingCommand("Ping v1.0.1"),
+		// Solve commands - ID 1
+		new KarutaDateCommand(),
+		new KarutaSolveDateCommand(),
+		new KarutaMapDateCommand(),
 		// Admin commands - ID +100
 		new ListServersCommand(),
 		new DropServerCommand(),

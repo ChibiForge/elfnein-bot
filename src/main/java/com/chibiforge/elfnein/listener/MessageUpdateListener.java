@@ -20,8 +20,8 @@ public class MessageUpdateListener implements EventListener<MessageUpdateEvent> 
 	
 	@SuppressWarnings("unused")
 	private static final Set<MessageCommand> commandsTest = Set.of(
-		new KarutaCollectionListMessageCommand(),
-		new KarutaListenCommand()
+		new KarutaCollectionListMessageCommand()/*,
+		new KarutaListenCommand()*/
 	);
 	
 	private static final Set<MessageCommand> commands = commandsActivity;

@@ -18,7 +18,7 @@ public class KarutaMapDateCommand extends MessageCommand {
 
 	public KarutaMapDateCommand(){
 		commandNames.add("map");
-		commandId = Global.cmdIdMap;
+		commandId = Global.cmdIdSolve;
 	}
 	
 	@Override
