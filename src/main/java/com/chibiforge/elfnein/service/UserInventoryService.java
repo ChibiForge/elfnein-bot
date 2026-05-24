@@ -103,6 +103,65 @@ public class UserInventoryService {
         int delta
     ) {}
     
+	
+	/////////////
+	// Crayons //
+	/////////////
+	
+	 private static final long[] CRAYON_ITEM_IDS = {1101L,1102L,1103L,1104L,1105L,1106L,1107L,1108L};
+	    
+	@Transactional
+	public Long checkForCrayons(String userId) {
+		// Check CD
+		Instant now = Instant.now();
+		Timestamp prev = lastTimeSpeak.get(userId);
+		if (prev != null) {
+			if (prev.toInstant().isAfter(now.minus(60, ChronoUnit.SECONDS))) {
+				return null;
+			} else {
+				lastTimeSpeak.replace(userId, Timestamp.from(now));
+			}
+		} else {
+			lastTimeSpeak.put(userId, Timestamp.from(now));
+		}
+		
+		// 10% chance
+		if (ThreadLocalRandom.current().nextInt(100) >= 10) return null;
+		
+		// Give Bow
+		long crayonItemId = CRAYON_ITEM_IDS[ThreadLocalRandom.current().nextInt(CRAYON_ITEM_IDS.length)];
+		giveItemToUser(userId, crayonItemId, 1);
+		
+		return crayonItemId;
+	}
+
+	    @Transactional(readOnly = true)
+	    public boolean hasAllCrayons(String userId) {
+	        requireUser(userId);
+
+	        for (long crayonId : CRAYON_ITEM_IDS) {
+	            int qty = repo.findByUserIdAndItemId(userId, crayonId)
+	                    .map(UserInventory::getQuantity)
+	                    .orElse(0);
+	            if (qty <= 0) return false;
+	        }
+	        return true;
+	    }
+	    
+	    @Transactional
+	    public boolean exchangeAllCrayonsForACrayonBox(String userId) {
+	        requireUser(userId);
+	        // Check user has the crayons
+	        if (!hasAllCrayons(userId)) return false;
+	        // Remove bows
+	        for (long crayonId : CRAYON_ITEM_IDS) {
+	            removeItemFromUser(userId, crayonId, 1);
+	        }
+	        // Give coins
+	        giveItemToUser(userId, 1100L, 1);
+	        return true;
+	    }
+	
     //////////
     // Bows // 
     //////////
@@ -169,13 +228,23 @@ public class UserInventoryService {
     ///////////////
     ///////////////
 
-    private static final Map<Long, Item> ITEMS = Map.of(
-    		0000L, new Item("coin","🪙", "Coin", "Coins"),
-    	    1001L, new Item("black_bow", "<:bow_black:1461128215010476133>", "Black Bow", "Black Bows"),
-    	    1002L, new Item("white_bow", "<:bow_white:1461128235378278515>", "White Bow", "White Bows"),
-    	    1003L, new Item("red_bow", "<:bow_red:1461128250817515695>", "Red Bow", "Red Bows"),
-    	    1004L, new Item("pink_bow", "<:bow_pink:1461128264675492122>", "Pink Bow", "Pink Bows"),
-    	    1005L, new Item("purple_bow", "<:bow_purple:1461128277312803029>", "Purple Bow", "Purple Bows"),
-    	    1006L, new Item("yellow_bow", "<:bow_yellow:1461128289463828500>", "Yellow Bow", "Yellow Bows")
-    	);
+    private static final Map<Long, Item> ITEMS = Map.ofEntries(
+    	Map.entry(0000L, new Item("coin","🪙", "Coin", "Coins")),
+		Map.entry(1001L, new Item("black_bow", "<:bow_black:1461128215010476133>", "Black Bow", "Black Bows")),
+		Map.entry(1002L, new Item("white_bow", "<:bow_white:1461128235378278515>", "White Bow", "White Bows")),
+		Map.entry(1003L, new Item("red_bow", "<:bow_red:1461128250817515695>", "Red Bow", "Red Bows")),
+		Map.entry(1004L, new Item("pink_bow", "<:bow_pink:1461128264675492122>", "Pink Bow", "Pink Bows")),
+		Map.entry(1005L, new Item("purple_bow", "<:bow_purple:1461128277312803029>", "Purple Bow", "Purple Bows")),
+		Map.entry(1006L, new Item("yellow_bow", "<:bow_yellow:1461128289463828500>", "Yellow Bow", "Yellow Bows")),
+		Map.entry(1100L, new Item("crayon_box", "<:crayon_box:1508214832867053729>", "Crayon Box", "Crayon Boxes")),
+		Map.entry(1101L, new Item("black_crayon", "<:crayon_black:1508195915788456018>", "Black Crayon", "Black Crayons")),
+		Map.entry(1102L, new Item("brown_crayon", "<:crayon_brown:1508195918120489112>", "Brown Crayon", "Brown Crayons")),
+		Map.entry(1103L, new Item("red_crayon", "<:crayon_red:1508195921601499216>", "Red Crayon", "Red Crayons")),
+		Map.entry(1104L, new Item("purple_crayon", "<:crayon_purple:1508195922813911090>", "Purple Crayon", "Purple Crayons")),
+		Map.entry(1105L, new Item("blue_crayon", "<:crayon_blue:1508195916971118742>", "Blue Crayon", "Blue Crayons")),
+		Map.entry(1106L, new Item("green_crayon", "<:crayon_green:1508195919152287875>", "Green Crayon", "Green Crayons")),
+		Map.entry(1107L, new Item("yellow_crayon", "<:crayon_yellow:1508195924176932864>", "Yellow Crayon", "Yellow Crayons")),
+		Map.entry(1108L, new Item("orange_crayon", "<:crayon_orange:1508195920326693104>", "Orange Crayon", "Orange Crayons"))
+    );
+    
 }

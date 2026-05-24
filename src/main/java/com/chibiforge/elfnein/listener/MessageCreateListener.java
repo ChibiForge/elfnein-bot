@@ -26,17 +26,18 @@ public class MessageCreateListener implements EventListener<MessageCreateEvent> 
 		// Admin commands - ID +100
 		new ListServersCommand(),
 		new DropServerCommand(),
-		new GetInviteServerCommand(),
+		//new GetInviteServerCommand(),
 		new GetServerInfoCommand(),
 		new SetPermissionCommand(),
-		new AdmCommand(),
+		//new AdmCommand(),
 		// Inventory commands
 		new CoinsCommand(),
 		new InventoryCommand(),
 		// Event
 		new EventCommand(),
+		new EventActivityCommand(),
 		// Shogun commands - ID 4 & +40
-		new KarutaLoopTimerCommand(),
+		//new KarutaLoopTimerCommand(),
 		new KarutaLoopCommand(),
 		new KarutaNodesCommand(),
 		new KarutaSetShogunCommand(),
@@ -46,9 +47,9 @@ public class MessageCreateListener implements EventListener<MessageCreateEvent> 
 		// Utils - ID + 100
 		new SayCommand(),
 		new MathCommand(),
-		new RepeatCommand(),
+		new RepeatCommand()
 		// Activity
-		new RankingCommand()
+		//new RankingCommand()
 	);
 	
 	private static final Set<MessageCommand> commands = commandsGeneral;

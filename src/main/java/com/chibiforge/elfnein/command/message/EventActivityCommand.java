@@ -29,6 +29,8 @@ public class EventActivityCommand extends MessageCommand {
 			return activityXmasEvent(message);
 		else if(now.getMonthValue() == 1 && now.getDayOfMonth() >= 14 && now.getDayOfMonth() < 20)
 			return activityBowEvent(message);
+		else if(now.getMonthValue() == 5 && now.getDayOfMonth() >= 25 && now.getDayOfMonth() <= 31)
+			return activityCrayonEvent(message);
 		return Mono.empty();
 	}
 	
@@ -48,6 +50,17 @@ public class EventActivityCommand extends MessageCommand {
 			if(bowId != null) return Util.replyToMessage(message,
 				"You notice something on the ground. It's a bow!\n" +
 				"**Collected:** *" + Service.userInventoryService.getItem(bowId).getNameAndIcon(false) + "*"
+			).then();
+			return Mono.empty();
+		}).orElse(Mono.empty()).then();
+	}
+	
+	private Mono<Void> activityCrayonEvent(Message message) {
+		return message.getAuthor().map(user -> {
+			Long crayonId = Service.userInventoryService.checkForCrayons(user.getId().asString());
+			if(crayonId != null) return Util.replyToMessage(message,
+				"You notice something on the ground. It's a crayon!\n" +
+				"**Collected:** *" + Service.userInventoryService.getItem(crayonId).getNameAndIcon(false) + "*"
 			).then();
 			return Mono.empty();
 		}).orElse(Mono.empty()).then();
