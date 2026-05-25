@@ -77,11 +77,11 @@ public class EventCommand extends MessageCommand {
 	private Container containerCrayonEvent(String userId, boolean canCollect, String customId) {
 		Container crayonContainer = Container.of(
 			Color.PINK,
-			TextDisplay.of("# <:crayon_box:1508214832867053729> Crayon Finding <:crayon_box:1508214832867053729>"),
+			TextDisplay.of("# <:crayon_box_set:1508419585349652520> Crayon Search <:crayon_box_set:1508419585349652520>"),
 			Separator.of(true, SpacingSize.of(1)),
 			TextDisplay.of(
 				"🖍️ **Disaster!**\n" +
-				"It's Ris' birthday and Arracso wanted to try drawing her something nice…\n" +
+				"This week is Ris' birthday and Arracso wanted to try drawing her something nice…\n" +
 				"**But he somehow lost every single crayon. Every. Single. One.**"
 		    ),
 			TextDisplay.of(
