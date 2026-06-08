@@ -24,19 +24,19 @@ public class Global {
     // Admin
     public static Integer cmdAdmin = 100;
     
-    // Date Solver
+    // Date Solver - 
     public static Integer cmdIdSolve = 11;
     public static Integer cmdIdMap = 12;
     public static Integer cmdIdDate = 1;
     
-    // Interactions
-    public static Integer cmdIdInt = 2;
+ // Interactions
+    public static Integer cmdIdInt = 20;
     
     // Activity
-    public static Integer cmdIdActivity = 3;
+    public static Integer cmdIdActivity = 31;
     public static Integer cmdIdActivityRoles = 32;
     
-    // Shogun
+    // Shogun - 40+
     public static Integer cmdIdLoop = 4;
     public static Integer cmdIdNodes = 4;
     public static Integer cmdIdTrack = 42;
@@ -44,16 +44,16 @@ public class Global {
     public static Integer cmdIdShogunInfo = 44; // Set
     public static Integer cmdIdNodeInfo = 45; // Set
     
-    // Analysis
+    // Analysis - 50+
     public static Integer cmdIdDyeAnalysis = 51;
     
     // Utils
     public static Integer cmdIdSay = 101;
     public static Integer cmdIdRepeate = 102;
-    public static Integer cmdIdMath = 201;
+    public static Integer cmdIdMath = 110;
     
     // Games
-    public static Integer cmdIdArea = 202;
+    public static Integer cmdIdArea = 210;
     
     // Events
     public static Integer cmdIdEvent = 1000;

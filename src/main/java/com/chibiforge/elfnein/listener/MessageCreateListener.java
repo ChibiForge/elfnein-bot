@@ -37,7 +37,7 @@ public class MessageCreateListener implements EventListener<MessageCreateEvent> 
 		new EventCommand(),
 		new EventActivityCommand(),
 		// Shogun commands - ID 4 & +40
-		//new KarutaLoopTimerCommand(),
+		new KarutaLoopTimerCommand(),
 		new KarutaLoopCommand(),
 		new KarutaNodesCommand(),
 		new KarutaSetShogunCommand(),

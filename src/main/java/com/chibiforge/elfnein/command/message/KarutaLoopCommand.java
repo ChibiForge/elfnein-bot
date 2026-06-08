@@ -171,7 +171,7 @@ public class KarutaLoopCommand extends MessageCommand {
 				.description("kna " + node + " " + finalAttack)
 				.build();
 		
-		return Util.replyToMessage(message, embed).then(message.getChannel().block().createMessage(embed2).then()).then();
+		return Util.replyToMessage(message, embed).then(message.getChannel().flatMap(channel -> channel.createMessage(embed2))).then();
 	}
 	
 	private static int[] sizes = {
