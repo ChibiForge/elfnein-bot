@@ -35,6 +35,6 @@ public class PingCommand extends MessageCommand {
 	@SuppressWarnings("deprecation")
 	private Mono<? extends Void> editPing(Message message, Message messagePing) {
 		Duration ping = Duration.between(message.getTimestamp(),messagePing.getTimestamp());
-		return messagePing.edit(MessageEditSpec.builder().content(messagePing.getContent()+" `" + ping.toMillis() + "ms`\n-# Command group: "+ area).build()).then();
+		return messagePing.edit(MessageEditSpec.builder().content(messagePing.getContent()+" `" + ping.toMillis() + "ms`\n-# "+ area).build()).then();
 	}
 }

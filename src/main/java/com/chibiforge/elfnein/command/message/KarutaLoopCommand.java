@@ -27,7 +27,6 @@ public class KarutaLoopCommand extends MessageCommand {
 		commandId = Global.cmdIdLoop;
 	}
 	
-	
 	@Override
 	public Mono<Void> execute(Message message) {
 		String commandName = getCommandName(message);

@@ -31,7 +31,7 @@ public abstract class MessageCommand {
         String prefix = findPrefix(messageStr);
         if (prefix == null) return false;
         // Check command
-        String withoutPrefix = messageStr.substring(prefix.length());
+        String withoutPrefix = messageStr.substring(prefix.length()).strip();
         String commandName = findCommandName(withoutPrefix);
         if (commandName == null) return false;
         

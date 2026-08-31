@@ -18,7 +18,7 @@ public class MessageCreateListener implements EventListener<MessageCreateEvent> 
 	private static final Set<MessageCommand> commandsGeneral = Set.of(
 		// Base Commands - ID 0
 		new HelpCommand(),
-		new PingCommand("Ping v1.0.1"),
+		new PingCommand("v1.0.3"),
 		// Solve commands - ID 1
 		new KarutaDateCommand(),
 		new KarutaSolveDateCommand(),
