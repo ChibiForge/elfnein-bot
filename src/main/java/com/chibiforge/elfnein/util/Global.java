@@ -25,8 +25,8 @@ public class Global {
     public static Integer cmdAdmin = 100;
     
     // Date Solver - 
-    public static Integer cmdIdSolve = 11;
-    public static Integer cmdIdMap = 12;
+    public static Integer cmdIdSolve = 0;
+    public static Integer cmdIdMap = 0;
     public static Integer cmdIdDate = 1;
     
  // Interactions
